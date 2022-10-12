@@ -31,21 +31,25 @@ function wpb_hook_javascript()
 ?>
 	<script>
 		const loginWithWhatsapp = async () => {
-			const out = await axios.get("http://www.example.com");
+			const out = await axios.post("/", {
+				action: "openWhatsapp"
+			});
 			console.log(out);
 		};
-
-
-		// functionality to get search parameters from the current URL
-		let params = (new URL(document.location)).searchParams;
-		if (params.has("token")) {
-			// executed when the url has the token parameter
-			let userToken = params.get("token");
-			console.log('token', userToken);
-		}
 	</script>
 <?php
 }
+
+# Read the token from the redirection and make API calls to get user details
+# get user name and user id to save it as current user or
+# have a simple session created to save the user's authenticated value
+if (isset($_GET['token']) == "openWhatsapp") {
+	$response = wp_remote_get('https://api.github.com/users/wordpress');
+	$body     = wp_remote_retrieve_body($response);
+	echo $body;
+}
+
+
 add_action('wp_head', 'wpb_hook_javascript');
 
 wp_enqueue_script('axios', 'https://unpkg.com/axios/dist/axios.min.js');
