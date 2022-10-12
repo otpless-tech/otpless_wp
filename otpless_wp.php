@@ -34,6 +34,15 @@ function wpb_hook_javascript()
 			const out = await axios.get("http://www.example.com");
 			console.log(out);
 		};
+
+
+		// functionality to get search parameters from the current URL
+		let params = (new URL(document.location)).searchParams;
+		if (params.has("token")) {
+			// executed when the url has the token parameter
+			let userToken = params.get("token");
+			console.log('token', userToken);
+		}
 	</script>
 <?php
 }
