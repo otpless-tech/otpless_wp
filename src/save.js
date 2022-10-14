@@ -20,7 +20,7 @@ export default function save() {
 
 	return (
 		<div {...useBlockProps.save()} >
-			<button type="submit" name="openWhatsapp" >Login with Whatsapp</button>
+			<button onClick="loginWithWhatsapp()" >Login with Whatsapp</button>
 		</div>
 	);
 }
