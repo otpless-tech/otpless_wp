@@ -30,54 +30,64 @@ function create_block_otpless_wp_block_init()
 	if (isset($_POST['submit_otpless'])) {
 		$_SESSION['client_id'] = $_POST['client_id'];
 		$_SESSION['client_secret'] = $_POST['client_secret'];
+		$_SESSION['redirect_url'] = $_POST['redirect_url'];
 		if (get_option('client_id')) {
 			update_option('client_id', $_POST['client_id']);
 			update_option('client_secret', $_POST['client_secret']);
+			update_option('redirect_url', $_POST['redirect_url']);
 		}
 		add_option('client_id', $_POST['client_id']);
 		add_option('client_secret', $_POST['client_secret']);
-	}
-	if (isset($_POST['whatsapp'])) {
-		$this_args = array(
-			'headers' => array(
-				'clientid' => get_option('client_id'),
-				'client_secret' => get_option('client_secret')
-			)
-		);
-		$response = wp_remote_get($GET_INTENT_REQUEST_URI, $this_args);
-		$body     = wp_remote_retrieve_body($response);
-		echo '<script>console.log' + $body + '</script>';
-?>
-		<script>
-			var clientId = "<?php echo get_option('client_id') ?>";
-			console.log("HELLO HELLO HELLO", clientId);
-		</script>
-	<?php
+		update_option('redirect_url', $_POST['redirect_url']);
 	}
 }
 
+# state id generator function
+function getRandomString($n)
+{
+	$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	$randomString = '';
+
+	for ($i = 0; $i < $n; $i++) {
+		$index = rand(0, strlen($characters) - 1);
+		$randomString .= $characters[$index];
+	}
+
+	return $randomString;
+}
 
 # Injecting javascript code for getting intent url and opening whatsapp
 function wpb_hook_javascript()
 {
-	$shit = "sdf";
-	?>
+	$state = getRandomString(10);
+	$_SESSION['c_state'] = $state;
+?>
 	<script>
 		var clientId = "<?php echo get_option('client_id') ?>";
 		var clientSecret = '<?php echo get_option('client_secret') ?>';
+		var redirectUrl = '<?php echo get_option('redirect_url') ?>';
+		var cState = '<?php echo $_SESSION['c_state'] ?>';
+		console.log({
+			clientId,
+			clientSecret,
+			redirectUrl,
+			cState
+		});
 		const loginWithWhatsapp = async () => {
+			var newWindow = window.open('', '_blank');
 			const config = {
 				headers: {
-					"clientid": clientId,
-					"clientsecret": clientSecret
+					"appId": clientId,
 				}
 			};
-			console.log("MY CLIENT ID GIVEN IS", clientId);
-			console.log("MY CLIENT SECRET IS", clientSecret);
-			console.log("config", config);
-			const res = await axios.get("https://api.otpless.com/api/v1/user/getSignupUrl", config);
-			console.log("response", res);
-			window.open(res.url, '_blank');
+			const body = {
+				"loginMethod": "WHATSAPP",
+				"redirectionURL": redirectUrl,
+				"state": cState
+			}
+			const res = await axios.post("https://api.otpless.app/v1/client/user/session/initiate", body, config);
+			console.log("response", res.data.data.intent);
+			newWindow.location = res.data.data.intent;
 		};
 	</script>
 <?php
@@ -93,9 +103,10 @@ function otpless_admin_form()
 		<p>Enter your ClientID and Client Secret to save</p>
 		<div class="wrap">
 			<p>Please enter the Client ID & Client Secret</p>
-			<form method="post" id="mapform" name="mapform">
+			<form method="post" id="mapform" name="mapform" style="display: flex;flex-direction:column;gap:1rem;">
 				<input type="text" name="client_id" placeholder="Client ID">
 				<input type="text" name="client_secret" placeholder="Client Secret">
+				<input type="text" name="redirect_url" placeholder="Redirection Url">
 				<input type="submit" name="submit_otpless" value="save_client">
 			</form>
 		</div>
@@ -107,15 +118,15 @@ function otpless_admin_form()
 # get user name and user id to save it as current user or
 # have a simple session created to save the user's authenticated value
 if (isset($_GET['token'])) {
-	$response = wp_remote_post('https://api.otpless.com/api/v1/user/getUserDetails', array(
+	$response = wp_remote_post('https://api.otpless.app/v1/client/user/session/userdata', array(
 		'headers'     => array(
 			'Content-Type' => 'application/json; charset=utf-8',
-			'state' => '', //TODO: add state
-			'clientsecret' => '', //TODO: add client secret (figure a way to get client secret)
-			'clientid' => '' //TODO: set the client id (figure a way to get client id)
+			'appId' => get_option('client_id'), //TODO: add client secret (figure a way to get client secret)
+			'appSecret' => get_option('client_secret') //TODO: set the client id (figure a way to get client id)
 		),
 		'body'        => json_encode(array(
-			'token' => $_GET['token']
+			'token' => $_GET['token'],
+			'state' => $_SESSION['c_state']
 		)),
 		'method'      => 'POST',
 		'data_format' => 'body'
