@@ -26,6 +26,7 @@ $GET_INTENT_REQUEST_URI = "https://api.otpless.com/api/v1/user/getSignupUrl";
 
 function create_block_otpless_wp_block_init()
 {
+	session_start();
 	register_block_type(__DIR__ . '/build');
 	if (isset($_POST['submit_otpless'])) {
 		$_SESSION['client_id'] = $_POST['client_id'];
@@ -59,8 +60,11 @@ function getRandomString($n)
 # Injecting javascript code for getting intent url and opening whatsapp
 function wpb_hook_javascript()
 {
+	session_start();
 	$state = getRandomString(10);
-	$_SESSION['c_state'] = $state;
+	if (!($_SESSION['c_state'])) {
+		$_SESSION['c_state'] = $state;
+	}
 ?>
 	<script>
 		var clientId = "<?php echo get_option('client_id') ?>";
@@ -118,11 +122,12 @@ function otpless_admin_form()
 # get user name and user id to save it as current user or
 # have a simple session created to save the user's authenticated value
 if (isset($_GET['token'])) {
+	session_start();
 	$response = wp_remote_post('https://api.otpless.app/v1/client/user/session/userdata', array(
 		'headers'     => array(
 			'Content-Type' => 'application/json; charset=utf-8',
-			'appId' => get_option('client_id'), //TODO: add client secret (figure a way to get client secret)
-			'appSecret' => get_option('client_secret') //TODO: set the client id (figure a way to get client id)
+			'appId' => get_option('client_id'),
+			'appSecret' => get_option('client_secret')
 		),
 		'body'        => json_encode(array(
 			'token' => $_GET['token'],
@@ -132,15 +137,15 @@ if (isset($_GET['token'])) {
 		'data_format' => 'body'
 	));
 	$body     = wp_remote_retrieve_body($response);
+	//TODO: SAVE THE USER DETAILS IN SESSION FOR LOGIN
 	echo $body;
+	echo $_SESSION['c_state'];
 }
 
 function otpless_plugin_section_text()
 {
 	echo '<p>Set Client ID and SECRET for Otpless</p>';
 }
-
-session_start();
 
 function otpless_admin_page()
 {
