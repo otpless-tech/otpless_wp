@@ -137,8 +137,9 @@ if (isset($_GET['token'])) {
 		'data_format' => 'body'
 	));
 	$body     = wp_remote_retrieve_body($response);
-	//TODO: SAVE THE USER DETAILS IN SESSION FOR LOGIN
 	echo $body;
+	$_SESSION['user_name'] = $body['name'];
+	$_SESSION['user_mobile'] = $body['mobile'];
 	echo $_SESSION['c_state'];
 }
 
