@@ -102,16 +102,16 @@ function wpb_hook_javascript()
 function otpless_admin_form()
 {
 ?>
-	<div>
+	<div class="form-wrap" style="width: 40vw;">
 		<h2>OTPless Settings</h2>
-		<p>Enter your ClientID and Client Secret to save</p>
+		<p>Enter your App ID and App Secret to save</p>
 		<div class="wrap">
-			<p>Please enter the Client ID & Client Secret</p>
+			<p>Please enter the App ID & App Secret</p>
 			<form method="post" id="mapform" name="mapform" style="display: flex;flex-direction:column;gap:1rem;">
-				<input type="text" name="client_id" placeholder="Client ID">
-				<input type="text" name="client_secret" placeholder="Client Secret">
+				<input type="text" name="client_id" placeholder="App ID">
+				<input type="text" name="client_secret" placeholder="App Secret">
 				<input type="text" name="redirect_url" placeholder="Redirection Url">
-				<input type="submit" name="submit_otpless" value="save_client">
+				<input type="submit" class="button button-primary" name="submit_otpless" value="Save Configuration">
 			</form>
 		</div>
 	</div>
