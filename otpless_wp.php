@@ -2,7 +2,7 @@
 
 /**
  * Plugin Name:       Otpless Wp
- * Description:       Example block scaffolded with Create Block tool.
+ * Description:       Wordpress plugin for logging with Whatsapp using OTPless
  * Requires at least: 5.9
  * Requires PHP:      7.0
  * Version:           0.1.0
