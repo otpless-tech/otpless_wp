@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Plugin Name:       Otpless Wp
+ * Plugin Name:       Otpless - Login with Whatsapp
  * Description:       Wordpress plugin for logging with Whatsapp using OTPless
  * Requires at least: 5.9
  * Requires PHP:      7.0
- * Version:           0.1.0
+ * Version:           1.0.0
  * Author:            OTPless<www.otpless.com> and Solai Raj M<msraj085@gmail.com>
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -32,10 +32,12 @@ function create_block_otpless_wp_block_init()
 		$_SESSION['client_id'] = $_POST['client_id'];
 		$_SESSION['client_secret'] = $_POST['client_secret'];
 		$_SESSION['redirect_url'] = $_POST['redirect_url'];
+		$_SESSION['use_check'] = $_POST['use_check'];
 		if (get_option('client_id')) {
 			update_option('client_id', $_POST['client_id']);
 			update_option('client_secret', $_POST['client_secret']);
 			update_option('redirect_url', $_POST['redirect_url']);
+			update_option('use_check', $_POST['use_check']);
 		}
 		add_option('client_id', $_POST['client_id']);
 		add_option('client_secret', $_POST['client_secret']);
@@ -67,17 +69,12 @@ function wpb_hook_javascript()
 	}
 ?>
 	<script>
-		var clientId = "<?php echo get_option('client_id') ?>";
-		var clientSecret = '<?php echo get_option('client_secret') ?>';
-		var redirectUrl = '<?php echo get_option('redirect_url') ?>';
-		var cState = '<?php echo $_SESSION['c_state'] ?>';
-		console.log({
-			clientId,
-			clientSecret,
-			redirectUrl,
-			cState
-		});
 		const loginWithWhatsapp = async () => {
+			var clientId = "<?php echo get_option('client_id') ?>";
+			var clientSecret = '<?php echo get_option('client_secret') ?>';
+			var redirectUrl = '<?php echo get_option('redirect_url') ?>';
+			var useCurrentRedirectionUrl = '<?php echo get_option('use_check') ?>';
+			var cState = '<?php echo $_SESSION['c_state'] ?>';
 			var newWindow = window.open('', '_blank');
 			const config = {
 				headers: {
@@ -86,7 +83,7 @@ function wpb_hook_javascript()
 			};
 			const body = {
 				"loginMethod": "WHATSAPP",
-				"redirectionURL": redirectUrl,
+				"redirectionURL": redirectUrl == "" ? window.location.href : redirectUrl,
 				"state": cState
 			}
 			const res = await axios.post("https://api.otpless.app/v1/client/user/session/initiate", body, config);
@@ -111,6 +108,7 @@ function otpless_admin_form()
 				<input type="text" name="client_id" placeholder="App ID">
 				<input type="text" name="client_secret" placeholder="App Secret">
 				<input type="text" name="redirect_url" placeholder="Redirection Url">
+				<span><em>Leave Redirection Url field Empty to use dynamic URL (Page where whatsapp login occurs)</em></span>
 				<input type="submit" class="button button-primary" name="submit_otpless" value="Save Configuration">
 			</form>
 		</div>
@@ -136,11 +134,9 @@ if (isset($_GET['token'])) {
 		'method'      => 'POST',
 		'data_format' => 'body'
 	));
-	$body     = wp_remote_retrieve_body($response);
-	echo $body;
-	$_SESSION['user_name'] = $body['name'];
-	$_SESSION['user_mobile'] = $body['mobile'];
-	echo $_SESSION['c_state'];
+	$body     = json_decode(wp_remote_retrieve_body($response));
+	$_SESSION['otpless_user_name'] = $body->data->name;
+	$_SESSION['otpless_user_mobile'] = $body->data->mobile;
 }
 
 function otpless_plugin_section_text()

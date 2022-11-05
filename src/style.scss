@@ -10,3 +10,18 @@
 	color: #fff;
 	padding: 2px;
 }
+
+.otpless-login-btn {
+	background-color: #fff;
+	border: 1px solid #49c758;
+	border-radius: 10px;
+	box-shadow: 0 2px 8px 0 rgba(99, 99, 99, 0.2);
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 1rem;
+	font-weight: bold;
+	font-size: inherit;
+	font-weight: bold;
+}

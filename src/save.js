@@ -17,10 +17,15 @@ import axios from "axios";
  * @return {WPElement} Element to render.
  */
 export default function save() {
-
 	return (
-		<div {...useBlockProps.save()} >
-			<button onClick="loginWithWhatsapp()" >Login with Whatsapp</button>
+		<div {...useBlockProps.save()}>
+			<button onClick="loginWithWhatsapp()" className="otpless-login-btn">
+				<img
+					width={"40px"}
+					src="https://otpless.com/static/media/whatsapp.254d325f.svg"
+				/>
+				<span>Login with Whatsapp</span>
+			</button>
 		</div>
 	);
 }
