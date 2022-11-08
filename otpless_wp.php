@@ -6,7 +6,7 @@
  * Requires at least: 5.9
  * Requires PHP:      7.0
  * Version:           1.0.0
- * Author:            OTPless<www.otpless.com> and Solai Raj M<msraj085@gmail.com>
+ * Author:            OTPless<www.otpless.com>
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       otpless_wp

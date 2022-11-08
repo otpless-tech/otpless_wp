@@ -2,15 +2,15 @@
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 2,
 	"name": "loginwithwhatsapp/otpless-wp",
-	"version": "0.1.0",
+	"version": "1.0.0",
 	"title": "Otpless",
-	"category": "design",
-	"icon": "hammer",
-	"description": "Example block scaffolded with Create Block tool.",
+	"category": "widget",
+	"icon": "lock",
+	"description": "Otpless Block - Login user with Whatsapp",
 	"supports": {
 		"html": true
 	},
-	"textdomain": "otpless_wp",
+	"textdomain": "otpless",
 	"editorScript": "file:./index.js",
 	"editorStyle": "file:./index.css",
 	"style": "file:./style-index.css"
