@@ -13,8 +13,15 @@
 
 - download the plugin zip file
 - upload the file in the installation page
+<img width="953" alt="Screenshot 2022-11-11 at 9 20 40 AM" src="https://user-images.githubusercontent.com/54436424/201300930-e896afcf-b5c0-4a53-a51b-d2f3f9d4e684.png">
+<img width="1235" alt="Screenshot 2022-11-11 at 9 21 20 AM" src="https://user-images.githubusercontent.com/54436424/201300956-9f0d7999-d9f6-423d-8610-c865f99a60aa.png">
+<img width="1231" alt="Screenshot 2022-11-11 at 9 21 53 AM" src="https://user-images.githubusercontent.com/54436424/201300971-529fc7a5-52bc-44f5-9df3-3e71437cb3e3.png">
+<img width="1241" alt="Screenshot 2022-11-11 at 9 22 33 AM" src="https://user-images.githubusercontent.com/54436424/201300998-bb21023b-1e6f-425d-bd80-f272260f4d67.png">
 
 - activate the plugin
+<img width="720" alt="Screenshot 2022-11-11 at 9 24 54 AM" src="https://user-images.githubusercontent.com/54436424/201301027-fb2de163-4e7e-4bf7-9be5-831286adbf13.png">
+- Now you should see the Installed Plugin
+<img width="1252" alt="Screenshot 2022-11-11 at 9 25 51 AM" src="https://user-images.githubusercontent.com/54436424/201301120-765c7131-faa2-42dc-b72b-a414a8b50235.png">
 
 <!-- ### Using plugin manager
 
