@@ -25,3 +25,13 @@
 	font-size: inherit;
 	font-weight: bold;
 }
+
+
+// Full width button on smaller screens
+@media screen and (max-width: 470px) {
+	.otpless-login-btn {
+		width: 100%;
+		justify-content: start;
+		gap: 1rem;
+	}
+}
