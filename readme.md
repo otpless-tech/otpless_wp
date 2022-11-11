@@ -13,12 +13,13 @@
 
 - download the plugin zip file
 - upload the file in the installation page
+
 - activate the plugin
 
-### Using plugin manager
+<!-- ### Using plugin manager
 
 - search for 'otpless' in plugins online downloader (builtin to wordpress)
-- activate the plugin
+- activate the plugin -->
 
 ## Enter the credentials
 
