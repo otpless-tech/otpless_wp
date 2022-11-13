@@ -24,6 +24,7 @@
 
 $GET_INTENT_REQUEST_URI = "https://api.otpless.com/api/v1/user/getSignupUrl";
 
+# Function to save OTPLess configurations
 function create_block_otpless_wp_block_init()
 {
 	session_start();
@@ -32,16 +33,17 @@ function create_block_otpless_wp_block_init()
 		$_SESSION['client_id'] = $_POST['client_id'];
 		$_SESSION['client_secret'] = $_POST['client_secret'];
 		$_SESSION['redirect_url'] = $_POST['redirect_url'];
-		$_SESSION['use_check'] = $_POST['use_check'];
+		$_SESSION['use_state'] = $_POST['use_state'];
 		if (get_option('client_id')) {
 			update_option('client_id', $_POST['client_id']);
+			update_option('use_state', $_POST['use_state']);
 			update_option('client_secret', $_POST['client_secret']);
 			update_option('redirect_url', $_POST['redirect_url']);
-			update_option('use_check', $_POST['use_check']);
 		}
 		add_option('client_id', $_POST['client_id']);
+		add_option('use_state', $_POST['use_state']);
 		add_option('client_secret', $_POST['client_secret']);
-		update_option('redirect_url', $_POST['redirect_url']);
+		add_option('redirect_url', $_POST['redirect_url']);
 	}
 }
 
@@ -73,6 +75,7 @@ function wpb_hook_javascript()
 			var clientId = "<?php echo get_option('client_id') ?>";
 			var clientSecret = '<?php echo get_option('client_secret') ?>';
 			var redirectUrl = '<?php echo get_option('redirect_url') ?>';
+			var useState = '<?php echo get_option('use_state') ?>';
 			var useCurrentRedirectionUrl = '<?php echo get_option('use_check') ?>';
 			var cState = '<?php echo $_SESSION['c_state'] ?>';
 			var newWindow = window.open('', '_blank');
@@ -84,7 +87,9 @@ function wpb_hook_javascript()
 			const body = {
 				"loginMethod": "WHATSAPP",
 				"redirectionURL": redirectUrl == "" ? window.location.href : redirectUrl,
-				"state": cState
+			}
+			if (useState == "true") {
+				body["state"] = cState;
 			}
 			const res = await axios.post("https://api.otpless.app/v1/client/user/session/initiate", body, config);
 			console.log("response", res.data.data.intent);
@@ -108,7 +113,9 @@ function otpless_admin_form()
 				<input type="text" name="client_id" placeholder="App ID">
 				<input type="text" name="client_secret" placeholder="App Secret">
 				<input type="text" name="redirect_url" placeholder="Redirection Url">
-				<span><em>Leave Redirection Url field Empty to use dynamic URL (Page where whatsapp login occurs)</em></span>
+				<span><em>If the redirectionURL is not provided, the url of page where the plugin is installed will be used as the redirectionURL.</em></span>
+				<input type="text" name="use_state" placeholder="state" value="true">
+				<span><em>Set state to false if you want to make the redirectionURL received on whatsapp shareable.</em></span>
 				<input type="submit" class="button button-primary" name="submit_otpless" value="Save Configuration">
 			</form>
 		</div>
@@ -121,16 +128,19 @@ function otpless_admin_form()
 # have a simple session created to save the user's authenticated value
 if (isset($_GET['token'])) {
 	session_start();
+	$body = array(
+		'token' => $_GET['token']
+	);
+	if (get_option('use_state') == "true") {
+		array_push($body, $_SESSION['c_state']);
+	}
 	$response = wp_remote_post('https://api.otpless.app/v1/client/user/session/userdata', array(
 		'headers'     => array(
 			'Content-Type' => 'application/json; charset=utf-8',
 			'appId' => get_option('client_id'),
 			'appSecret' => get_option('client_secret')
 		),
-		'body'        => json_encode(array(
-			'token' => $_GET['token'],
-			'state' => $_SESSION['c_state']
-		)),
+		'body'        => json_encode($body),
 		'method'      => 'POST',
 		'data_format' => 'body'
 	));
